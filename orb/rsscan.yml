@@ -5,7 +5,8 @@ version: 2.1
 
 description: |
   Fail the build when a commit introduces an API key, token or other machine
-  credential. Backed by RelayShield's secret-scan API, 31 credential patterns.
+  credential. Matches 31 credential patterns entirely on the build machine — no
+  API key, no account, no network call.
 
 display:
   home_url: "https://api.relayshield.net/developers"

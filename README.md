@@ -16,7 +16,7 @@ Detects 31 credential patterns — AWS IAM keys, GitHub PATs, Stripe secrets, Sl
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/RelayShield/rsscan
-    rev: v0.1.0
+    rev: v0.1.1
     hooks:
       - id: rsscan
 ```
@@ -33,7 +33,7 @@ That is the whole setup. Nothing to configure, nothing to sign up for.
 - uses: actions/checkout@v4
   with:
     fetch-depth: 0        # required — the range needs history
-- uses: RelayShield/rsscan@v0.1.0
+- uses: RelayShield/rsscan@v0.1.1
   with:
     fail-on: HIGH
 ```
@@ -41,10 +41,15 @@ That is the whole setup. Nothing to configure, nothing to sign up for.
 ### GitLab CI/CD
 
 ```yaml
-include:
-  - component: $CI_SERVER_FQDN/relayshield/rsscan/secret-scan@0.1.0
-    inputs:
-      fail_on: HIGH
+rsscan:
+  image: relayshield/rsscan:0.1.1
+  variables:
+    GIT_DEPTH: 0        # required — GitLab shallow-clones, and a shallow clone
+                        # yields an empty diff, so the job would pass having
+                        # scanned nothing
+    RSSCAN_REV_RANGE: "origin/$CI_DEFAULT_BRANCH...HEAD"
+    RSSCAN_FAIL_ON: HIGH
+  script: ["rsscan"]
 ```
 
 ### CircleCI
@@ -63,7 +68,7 @@ workflows:
 ```bash
 docker run --rm -v "$PWD:/workspace" \
   -e RSSCAN_REV_RANGE=origin/main...HEAD \
-  relayshield/rsscan:0.1.0
+  relayshield/rsscan:0.1.1
 ```
 
 Bitbucket Pipelines:
@@ -71,7 +76,7 @@ Bitbucket Pipelines:
 ```yaml
 - step:
     script:
-      - pipe: docker://relayshield/rsscan:0.1.0
+      - pipe: docker://relayshield/rsscan:0.1.1
         variables:
           RSSCAN_REV_RANGE: "origin/main...HEAD"
 ```
